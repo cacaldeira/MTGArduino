@@ -2,30 +2,30 @@
 #include <LiquidCrystal_I2C.h>
 
 // LCDs
-LiquidCrystal_I2C lcd = {LiquidCrystal_I2C(0x27, 20, 4), LiquidCrystal_I2C(0x26, 20, 4)};
+LiquidCrystal_I2C lcd[] = {LiquidCrystal_I2C(0x27, 20, 4), LiquidCrystal_I2C(0x26, 20, 4)};
 
 // Button pins
-const int  btnPinUp[] = {2, 5};
-const int  btnPinDown[] = {3, 6};
-const int  btnPinSelector[] = {4, 7};
+const int  btnPinUp[4] = {2, 5, 8, 11};
+const int  btnPinDown[4] = {3, 6, 9, 12};
+const int  btnPinSelector[4] = {4, 7, 10, 13};
 
 // Life and Counters
-int counter[] = {40, 40, 40, 40};
-int poisonCounter[] = {0, 0, 0, 0};
-int commandDamageFront[] = {0, 0, 0, 0};
-int commandDamageSide[] = {0, 0, 0, 0};
-int commandDamageDiagonal[] = {0, 0, 0, 0};
+int counter[4] = {40, 40, 40, 40};
+int poisonCounter[4] = {0, 0, 0, 0};
+int commandDamageFront[4] = {0, 0, 0, 0};
+int commandDamageSide[4] = {0, 0, 0, 0};
+int commandDamageDiagonal[4] = {0, 0, 0, 0};
 
 // 0 life counter | 1 poison counter | 2 command damage front | 3 command damage side | 4 command damage diagonal
 // Selector and life showing on lcd ALL players
-int selectorState[] = {0, 0, 0, 0};
-int currentCounter[] = {0, 0, 0, 0};
+int selectorState[4] = {0, 0, 0, 0};
+int currentCounter[4] = {0, 0, 0, 0};
 
 // Button States
-int btnStateUp[] = {HIGH, HIGH, HIGH, HIGH};
-int btnStateDown[] = {HIGH, HIGH, HIGH, HIGH};
-int btnStateSelector[] = {HIGH, HIGH, HIGH, HIGH};
-int lastBtnStateSelector[] = {HIGH, HIGH, HIGH, HIGH};
+int btnStateUp[4] = {HIGH, HIGH, HIGH, HIGH};
+int btnStateDown[4] = {HIGH, HIGH, HIGH, HIGH};
+int btnStateSelector[4] = {HIGH, HIGH, HIGH, HIGH};
+int lastBtnStateSelector[4] = {HIGH, HIGH, HIGH, HIGH};
 
 // FUNTION displays the changes on the lcd of the choosen player
 char displayCounter[3];
@@ -92,9 +92,10 @@ void displaySelector(LiquidCrystal_I2C lcd, int player) {
   displayChange(lcd, ++player);
 }
 
+int i;
 void setup() {
   // initialize buttons and lcd
-  for (int i = 0; i < 4; i++) {
+  for (i = 0; i < 4; i++) {
     lcd[i].init();
     lcd[i].backlight();
     lcd[i].setCursor(3, 0);
@@ -115,7 +116,7 @@ void loop() {
   delay(150);
 
   // Read button states
-  for (int i = 0; i < 4; i++) {
+  for (i = 0; i < 4; i++) {
     madeChanges = false;
 
     btnStateUp[i] = digitalRead(btnPinUp[i]);
@@ -132,12 +133,14 @@ void loop() {
       madeChanges = true;
     }
 
-    if (madeChanges) 
-      displayChanges(lcd[i], i);
-    
-    if (btnStateSelector[i] == LOW && lastBtnStateSelector[i] == HIGH) 
+    if (madeChanges) {
+      displayChange(lcd[i], i);
+    }
+
+    if (btnStateSelector[i] == LOW && lastBtnStateSelector[i] == HIGH) {
       displaySelector(lcd[i], i);
-    
+    }
+
     lastBtnStateSelector[i] = btnStateSelector[i];
   }
 
