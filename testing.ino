@@ -17,7 +17,8 @@ uint8_t commandDamageSide[4] = {0, 0, 0, 0};
 uint8_t commandDamageDiagonal[4] = {0, 0, 0, 0};
 
 // 0 life counter | 1 poison counter | 2 command damage front | 3 command damage side | 4 command damage diagonal
-// Selector and life showing on lcd ALL players
+// Selector and life showing on lcd
+const char counterTitle[5][16] PROGMEM = {"   Life Total:  ", "Poison Counters:", "   CDmg Front:  ", "   CDmg Side:   ", " CDmg Diagonal: "};
 uint8_t selectorState[4] = {0, 0, 0, 0};
 uint8_t currentCounter[4] = {0, 0, 0, 0};
 
@@ -27,10 +28,9 @@ uint8_t btnStateDown[4] = {HIGH, HIGH, HIGH, HIGH};
 uint8_t btnStateSelector[4] = {HIGH, HIGH, HIGH, HIGH};
 uint8_t lastBtnStateSelector[4] = {HIGH, HIGH, HIGH, HIGH};
 
-// FUNTION displays the changes on the lcd of the choosen player
-char displayCounter[3];
+// FUNCTION displays the changes on the lcd of the choosen player
 void displayChange(LiquidCrystal_I2C lcd, uint8_t player) {
-
+  char displayCounter[3];
   sprintf(displayCounter, "%03d", currentCounter[player]);
 
   if (currentCounter[player] < 100) {
@@ -52,39 +52,39 @@ void displayChange(LiquidCrystal_I2C lcd, uint8_t player) {
 void displaySelector(LiquidCrystal_I2C lcd, uint8_t player) {
 
   selectorState[player]++;
-  if (selectorState[player] > 4)
+  if (selectorState[player] > 4) {
     selectorState[player] = 0;
+  }
 
-  lcd.clear();
   lcd.setCursor(0, 0);
 
   switch (selectorState[player]) {
     case 0:
-      lcd.print("  Life Total:");
+      lcd.print(counterTitle[0]);
       commandDamageDiagonal[player] = currentCounter[player];
       currentCounter[player] = counter[player];
       break;
 
     case 1:
-      lcd.print("Poison Counters:");
+      lcd.print(counterTitle[1]);
       counter[player] = currentCounter[player];
       currentCounter[player] = poisonCounter[player];
       break;
 
     case 2:
-      lcd.print("    CD Front:");
+      lcd.print(counterTitle[2]);
       poisonCounter[player] = currentCounter[player];
       currentCounter[player] = commandDamageFront[player];
       break;
 
     case 3:
-      lcd.print("    CD Side:");
+      lcd.print(counterTitle[3]);
       commandDamageFront[player] = currentCounter[player];
       currentCounter[player] = commandDamageSide[player];
       break;
 
     case 4:
-      lcd.print("  CD Diagonal:");
+      lcd.print(counterTitle[4]);
       commandDamageSide[player] = currentCounter[player];
       currentCounter[player] = commandDamageDiagonal[player];
       break;
@@ -103,9 +103,9 @@ void setup() {
     lcd[i].print("40");
     currentCounter[i] = counter[i];
 
-    pinMode(btnPinUp[i], INPUT);
-    pinMode(btnPinDown[i], INPUT);
-    pinMode(btnPinSelector[i], INPUT);
+    pinMode(btnPinUp[i], INPUT_PULLUP);
+    pinMode(btnPinDown[i], INPUT_PULLUP);
+    pinMode(btnPinSelector[i], INPUT_PULLUP);
   }
 }
 
